@@ -1,10 +1,10 @@
 import axios from 'axios';
 import type { Note } from '../types.ts/note';
 
-// interface fetchNotesProps {
-//   searchQuery?: string;
-//   searchPage?: number;
-// }
+interface fetchNotesProps {
+  query?: string;
+  page?: number;
+}
 
 export interface fetchNotesResponse {
   notes: Note[];
@@ -20,11 +20,15 @@ interface createNoteProps {
 axios.defaults.baseURL = 'https://notehub-public.goit.study/api';
 const myToken = import.meta.env.VITE_NOTEHUB_TOKEN;
 
-export const fetchNotes = async (): Promise<fetchNotesResponse> => {
+export const fetchNotes = async ({
+  query,
+  page,
+}: fetchNotesProps): Promise<fetchNotesResponse> => {
   const options = {
-    parameters: {
-      page: 1,
+    params: {
+      page,
       perPage: 12,
+      query,
     },
     headers: {
       Authorization: `Bearer ${myToken}`,
@@ -35,6 +39,7 @@ export const fetchNotes = async (): Promise<fetchNotesResponse> => {
     .get('/notes', options)
     .then(response => response.data);
 
+  console.log('API response →', response);
   return response;
 };
 
