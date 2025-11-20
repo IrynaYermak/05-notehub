@@ -2,8 +2,8 @@ import axios from 'axios';
 import type { Note } from '../types.ts/note';
 
 interface fetchNotesProps {
-  query?: string;
-  page?: number;
+  seearch: string;
+  page: number;
 }
 
 export interface fetchNotesResponse {
@@ -17,18 +17,19 @@ interface createNoteProps {
   tag: string;
 }
 
-axios.defaults.baseURL = 'https://notehub-public.goit.study/api';
 const myToken = import.meta.env.VITE_NOTEHUB_TOKEN;
+axios.defaults.baseURL = 'https://notehub-public.goit.study/api';
+axios.defaults.headers.common['Authorization'] = myToken;
 
 export const fetchNotes = async ({
-  query,
+  seearch,
   page,
 }: fetchNotesProps): Promise<fetchNotesResponse> => {
   const options = {
     params: {
       page,
       perPage: 12,
-      query,
+      seearch,
     },
     headers: {
       Authorization: `Bearer ${myToken}`,
