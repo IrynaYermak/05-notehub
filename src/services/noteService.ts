@@ -19,7 +19,7 @@ interface createNoteProps {
 
 const myToken = import.meta.env.VITE_NOTEHUB_TOKEN;
 axios.defaults.baseURL = 'https://notehub-public.goit.study/api';
-axios.defaults.headers.common['Authorization'] = myToken;
+// axios.defaults.headers.common['Authorization'] = myToken;
 
 export const fetchNotes = async ({
   seearch,
@@ -45,10 +45,20 @@ export const fetchNotes = async ({
 };
 
 export const createNote = async (data: createNoteProps) => {
-  const response = await axios.post<Note>('/notes', data);
+  const response = await axios.post<Note>('/notes', data, {
+    headers: {
+      Authorization: `Bearer ${myToken}`,
+    },
+  });
+  console.log(response.data);
+
   return response.data;
 };
 
 export const deleteNote = async (id: Note['id']) => {
-  await axios.delete(`/notes/${id}`);
+  await axios.delete(`/notes/${id}`, {
+    headers: {
+      Authorization: `Bearer ${myToken}`,
+    },
+  });
 };

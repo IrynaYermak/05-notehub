@@ -6,14 +6,14 @@ import NoteList from '../NoteList/NoteList';
 import Modal from '../Modal/Modal';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { fetchNotes } from '../../services/noteService';
-
+import useModalControl from '../../hook/useModalControl';
 import css from './App.module.css';
 import NoteForm from '../NoteForm/NoteForm';
 
 function App() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { isModalOpen, openModal, closeModal } = useModalControl();
 
   const { data, isError, isLoading, isSuccess } = useQuery<fetchNotesResponse>({
     queryKey: ['notes', page, search],
@@ -24,9 +24,6 @@ function App() {
 
   const totalPages = data?.totalPages ?? 0;
   console.log(totalPages, page);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   return (
     <>
@@ -47,7 +44,7 @@ function App() {
         {isSuccess && data.notes.length > 0 && <NoteList notes={data.notes} />}
         {isModalOpen && (
           <Modal onClose={closeModal}>
-            <NoteForm />
+            <NoteForm onSuccess={closeModal} />
           </Modal>
         )}
       </div>

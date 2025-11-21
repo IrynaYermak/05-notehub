@@ -1,9 +1,15 @@
 import { Formik, Form, Field, FormikHelpers, ErrorMessage } from 'formik';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
 import * as Yup from 'yup';
 import css from './NoteForm.module.css';
+// import useModalControl from '../../hook/useModalControl';
 import { createNote } from '../../services/noteService';
 // import type { NoteTag } from '../../types.ts/note';
+
+interface NoteFormProps {
+  onSuccess: () => void;
+}
 
 interface NoteFormValues {
   title: string;
@@ -28,21 +34,31 @@ const validationSchema = Yup.object().shape({
     .required('Tag is required'),
 });
 
-export default function NoteForm() {
-  const handleSubmit = (
+export default function NoteForm({ onSuccess }: NoteFormProps) {
+  //   const { closeModal } = useModalControl();
+  const fieldId = useId();
+  const queryClient = useQueryClient();
+
+  const { mutate, isError, isPending } = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      onSuccess();
+    },
+  });
+
+  const handleTaskCreate = (
     values: NoteFormValues,
     actions: FormikHelpers<NoteFormValues>
   ) => {
-    createNote(values);
+    mutate(values);
     actions.resetForm();
   };
-
-  const fieldId = useId();
 
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={handleSubmit}
+      onSubmit={handleTaskCreate}
       validationSchema={validationSchema}
     >
       {({ isValid, dirty }) => (
@@ -98,9 +114,9 @@ export default function NoteForm() {
             <button
               type="submit"
               className={css.submitButton}
-              disabled={!(isValid && dirty)}
+              disabled={!(isValid && dirty) || isPending}
             >
-              Create note
+              {isPending ? 'Creating...' : 'Create note'}
             </button>
           </div>
         </Form>
