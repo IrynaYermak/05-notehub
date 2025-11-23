@@ -17,7 +17,7 @@ export default function NoteList({ notes }: NotelistProps) {
     },
   });
 
-  const handleDeleteNote = (id: Note[id]) => {
+  const handleDeleteNote = (id: string) => {
     mutate(id);
   };
 
