@@ -34,20 +34,17 @@ export const fetchNotes = async ({
   };
 
   const response = await axios
-    .get('/notes', options)
+    .get<fetchNotesResponse>('/notes', options)
     .then(response => response.data);
-
-  // console.log('API response →', response);
   return response;
 };
 
 export const createNote = async (data: createNoteProps) => {
   const response = await axios.post<Note>('/notes', data, {});
-  // console.log(response.data);
-
   return response.data;
 };
 
-export const deleteNote = async (id: Note['id']) => {
-  await axios.delete(`/notes/${id}`);
+export const deleteNote = async (id: Note['id']): Promise<Note> => {
+  const response = await axios.delete<Note>(`/notes/${id}`);
+  return response.data;
 };

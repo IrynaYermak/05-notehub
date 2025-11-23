@@ -37,19 +37,27 @@ export default function App() {
     }
   }, [data?.notes.length]);
 
-  const hendleSearch = useDebouncedCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearch(event.target.value);
-    },
-    300
-  );
+  const hendleSearch = useDebouncedCallback((value: string) => {
+    setSearch(value);
+    setPage(1);
+  }, 300);
+
+  // const hendleSearch = useDebouncedCallback(
+  //   (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     setSearch(event.target.value);
+  //   },
+  //   300
+  // );
 
   return (
     <>
       <Toaster />
       <div className={css.app}>
         <header className={css.toolbar}>
-          <SearchBox onChange={hendleSearch} search={search} />
+          <SearchBox
+            onChange={e => hendleSearch(e.target.value)}
+            search={search}
+          />
           {totalPages > 1 && (
             <Pagination
               totalPages={totalPages}
