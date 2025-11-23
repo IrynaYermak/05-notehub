@@ -3,12 +3,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
 import * as Yup from 'yup';
 import css from './NoteForm.module.css';
-// import useModalControl from '../../hook/useModalControl';
 import { createNote } from '../../services/noteService';
-// import type { NoteTag } from '../../types.ts/note';
+import Error from '../Error/Error';
 
 interface NoteFormProps {
-  onSuccess: () => void;
+  onSuccessClose: () => void;
 }
 
 interface NoteFormValues {
@@ -34,7 +33,7 @@ const validationSchema = Yup.object().shape({
     .required('Tag is required'),
 });
 
-export default function NoteForm({ onSuccess }: NoteFormProps) {
+export default function NoteForm({ onSuccessClose }: NoteFormProps) {
   //   const { closeModal } = useModalControl();
   const fieldId = useId();
   const queryClient = useQueryClient();
@@ -43,7 +42,7 @@ export default function NoteForm({ onSuccess }: NoteFormProps) {
     mutationFn: createNote,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
-      onSuccess();
+      onSuccessClose();
     },
   });
 
@@ -108,7 +107,11 @@ export default function NoteForm({ onSuccess }: NoteFormProps) {
           </fieldset>
 
           <div className={css.actions}>
-            <button type="button" className={css.cancelButton}>
+            <button
+              type="button"
+              className={css.cancelButton}
+              onClick={onSuccessClose}
+            >
               Cancel
             </button>
             <button
@@ -118,6 +121,7 @@ export default function NoteForm({ onSuccess }: NoteFormProps) {
             >
               {isPending ? 'Creating...' : 'Create note'}
             </button>
+            {isError && <Error />}
           </div>
         </Form>
       )}
